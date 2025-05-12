@@ -1,8 +1,13 @@
 extends includes/layout.pug
 
 block content
+  // 引入 article-sort.pug 文件中的混入，用于生成按年份排序的文章列表
   include ./includes/mixins/article-sort.pug
+  // 创建归档页面主容器
   #archive
+    // 显示归档页面标题，包含文章总数（通过 _p 获取翻译的“文章”文本，getArchiveLength 获取文章数量）
     .article-sort-title= `${_p('page.articles')} - ${getArchiveLength()}`
+    // 调用 articleSort 混入，传入当前页面的文章数据（page.posts），生成文章列表
     +articleSort(page.posts)
+    // 引入 pagination.pug 模板，显示分页导航
     include includes/pagination.pug

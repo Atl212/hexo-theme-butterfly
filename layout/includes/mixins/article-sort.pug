@@ -1,23 +1,44 @@
+// 定义 articleSort 混入，接受 posts 参数（文章数据集合）
 mixin articleSort(posts)
+  // 创建文章排序容器
   .article-sort
+    // 定义一个变量 year，用于跟踪当前处理的年份
     - let year
+    // 遍历文章数据（posts）
     - posts.forEach(article => {
+      // 获取文章的发布年份（使用 date 函数格式化为 YYYY）
       - const tempYear = date(article.date, 'YYYY')
+      // 确定是否应用 no-cover 类（当文章无封面或主题禁用归档封面时）
       - const noCoverClass = article.cover === false || !theme.cover.archives_enable ? 'no-article-cover' : ''
+      // 获取文章标题（优先使用 article.title，否则使用翻译的 'no_title' 文本）
       - const title = article.title || _p('no_title')
+      // 如果当前文章的年份与 year 不同（即进入新年份）
       if tempYear !== year
+        // 更新 year 为当前年份
         - year = tempYear
+        // 显示年份标题
         .article-sort-item.year= year
+      // 创建单个文章项容器，动态添加 noCoverClass
       .article-sort-item(class=noCoverClass)
+        // 如果文章有封面且主题启用了归档封面
         if article.cover && theme.cover.archives_enable
+          // 创建封面链接，指向文章页面，包含标题作为提示
           a.article-sort-item-img(href=url_for(article.path) title=title)
+            // 如果封面类型为图片（img）
             if article.cover_type === 'img'
+              // 显示图片封面，包含错误处理（加载失败时显示默认图片）
               img(src=url_for(article.cover) alt=title onerror=`this.onerror=null;this.src='${url_for(theme.error_img.post_page)}'`)
             else
+              // 使用背景样式显示封面（例如背景颜色）
               div(style=`background: ${article.cover}`)
+        // 文章信息容器
         .article-sort-item-info
+          // 文章时间容器
           .article-sort-item-time
+            // 显示日历图标
             i.far.fa-calendar-alt
+            // 显示格式化的创建时间，包含完整日期作为提示
             time.post-meta-date-created(datetime=date_xml(article.date) title=_p('post.created') + ' ' + full_date(article.date))= date(article.date, config.date_format)
+          // 文章标题链接，指向文章页面，包含标题作为提示
           a.article-sort-item-title(href=url_for(article.path) title=title)= title
     - })

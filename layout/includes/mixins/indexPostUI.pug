@@ -1,116 +1,196 @@
+// 定义一个名为 indexPostUI 的混入（mixin），用于生成文章列表的 UI 结构
 mixin indexPostUI()
+  // 获取主题配置中的 index_layout，用于决定文章列表的布局样式
   - const indexLayout = theme.index_layout
+  // 根据 indexLayout 的值（6 或 7）决定是否应用 'masonry' 类，用于瀑布流布局
   - const masonryLayoutClass = (indexLayout === 6 || indexLayout === 7) ? 'masonry' : ''
+  // 创建一个带有动态类（masonryLayoutClass）的 div 容器，用于包裹文章列表
   #recent-posts.recent-posts.nc(class=masonryLayoutClass)
+    // 包含所有文章项的容器
     .recent-post-items
+      // 遍历当前页面中的文章数据（page.posts.data），index 为循环索引
       each article, index in page.posts.data
+        // 单个文章项的容器
         .recent-post-item
+          // 获取文章的链接（优先使用 article.link，否则使用 article.path）
           - const link = article.link || article.path
+          // 获取文章标题（优先使用 article.title，否则使用翻译的 'no_title' 文本）
           - const title = article.title || _p('no_title')
+          // 根据 indexLayout 决定文章封面的左右布局（indexLayout === 3 时交替左右，=== 2 时固定右，否则无）
           - const leftOrRight = indexLayout === 3 ? (index % 2 === 0 ? 'left' : 'right') : (indexLayout === 2 ? 'right' : '')
+          // 获取文章封面（article.cover）
           - const post_cover = article.cover
+          // 决定是否应用 'no-cover' 类（当无封面或主题禁用封面时）
           - const no_cover = article.cover === false || !theme.cover.index_enable ? 'no-cover' : ''
 
+          // 如果文章有封面且主题启用了封面显示
           if post_cover && theme.cover.index_enable
+            // 创建封面容器，动态添加 leftOrRight 类
             .post_cover(class=leftOrRight)
+              // 封面链接，指向文章页面，包含标题作为提示
               a(href=url_for(link) title=title)
+                // 如果封面类型为图片（img）
                 if article.cover_type === 'img'
+                  // 显示图片封面，包含错误处理（加载失败时显示默认图片）
                   img.post-bg(src=url_for(post_cover) onerror=`this.onerror=null;this.src='${url_for(theme.error_img.post_page)}'` alt=title)
                 else
+                  // 使用背景样式显示封面（例如背景颜色）
                   div.post-bg(style=`background: ${post_cover}`)
+
+          // 文章信息容器，动态添加 no_cover 类
           .recent-post-info(class=no_cover)
+            // 文章标题链接，指向文章页面，包含标题作为提示
             a.article-title(href=url_for(link) title=title)
+              // 如果是首页且文章置顶（top 或 sticky > 0），显示置顶图标
               if globalPageType === 'home' && (article.top || article.sticky > 0)
                 i.fas.fa-thumbtack.sticky
+              // 输出文章标题
               = title
+            // 文章元信息容器
             .article-meta-wrap
+              // 如果启用了日期显示（theme.post_meta.page.date_type）
               if theme.post_meta.page.date_type
                 span.post-meta-date
+                  // 如果日期类型为 'both'（同时显示创建和更新时间）
                   if theme.post_meta.page.date_type === 'both'
+                    // 显示日历图标
                     i.far.fa-calendar-alt
+                    // 显示“创建时间”标签
                     span.article-meta-label=_p('post.created')
+                    // 显示格式化的创建时间，包含完整日期作为提示
                     time.post-meta-date-created(datetime=date_xml(article.date) title=_p('post.created') + ' ' + full_date(article.date))= date(article.date, config.date_format)
+                    // 分隔符
                     span.article-meta-separator |
+                    // 显示历史图标
                     i.fas.fa-history
+                    // 显示“更新时间”标签
                     span.article-meta-label=_p('post.updated')
+                    // 显示格式化的更新时间，包含完整日期作为提示
                     time.post-meta-date-updated(datetime=date_xml(article.updated) title=_p('post.updated') + ' ' + full_date(article.updated))= date(article.updated, config.date_format)
                   else
+                    // 根据配置决定显示创建时间（date）还是更新时间（updated）
                     - const data_type_updated = theme.post_meta.page.date_type === 'updated'
                     - const date_type = data_type_updated ? 'updated' : 'date'
                     - const date_icon = data_type_updated ? 'fas fa-history' : 'far fa-calendar-alt'
                     - const date_title = data_type_updated ? _p('post.updated') : _p('post.created')
+                    // 显示对应的日期图标
                     i(class=date_icon)
+                    // 显示对应的日期标签
                     span.article-meta-label= date_title
+                    // 显示格式化的日期，包含完整日期作为提示
                     time(datetime=date_xml(article[date_type]) title=date_title + ' ' + full_date(article[date_type]))= date(article[date_type], config.date_format)
+
+              // 如果启用了分类显示且文章有分类
               if theme.post_meta.page.categories && article.categories.data.length > 0
                 span.article-meta
+                  // 分隔符
                   span.article-meta-separator |
+                  // 遍历文章的分类
                   each item, index in article.categories.data
+                    // 显示分类图标
                     i.fas.fa-inbox
+                    // 显示分类名称，链接到分类页面
                     a(href=url_for(item.path)).article-meta__categories #[=item.name]
+                    // 如果不是最后一个分类，显示分隔箭头
                     if index < article.categories.data.length - 1
                       i.fas.fa-angle-right.article-meta-link
+
+              // 如果启用了标签显示且文章有标签
               if theme.post_meta.page.tags && article.tags.length > 0
                 span.article-meta.tags
+                  // 分隔符
                   span.article-meta-separator |
+                  // 遍历文章的标签
                   each item, index in article.tags.data
+                    // 显示标签图标
                     i.fas.fa-tag
+                    // 显示标签名称，链接到标签页面
                     a(href=url_for(item.path)).article-meta__tags #[=item.name]
+                    // 如果不是最后一个标签，显示分隔点
                     if index < article.tags.data.length - 1
                       span.article-meta-link #[='•']
 
+              // 定义一个混入 countBlockInIndex，用于显示评论计数
               mixin countBlockInIndex
+                // 设置标志，表示需要加载评论计数相关的 JS
                 - needLoadCountJs = true
                 span.article-meta
+                  // 分隔符
                   span.article-meta-separator |
+                  // 显示评论图标
                   i.fas.fa-comments
+                  // 允许插入子内容（评论计数）
                   if block
                     block
+                  // 显示“评论数”标签
                   span.article-meta-label= ' ' + _p('card_post_count')
 
+              // 如果启用了评论计数且配置了评论系统
               if theme.comments.card_post_count && theme.comments.use
+                // 根据使用的评论系统（theme.comments.use[0]）处理
                 case theme.comments.use[0]
+                  // Disqus 或 Disqusjs 评论系统
                   when 'Disqus'
                   when 'Disqusjs'
+                    // 调用 countBlockInIndex 混入
                     +countBlockInIndex
+                      // 显示 Disqus 评论计数链接，包含加载动画
                       a.disqus-count(href=full_url_for(link) + '#post-comment')
                         i.fa-solid.fa-spinner.fa-spin
+                  // Valine 评论系统
                   when 'Valine'
                     +countBlockInIndex
+                      // 显示 Valine 评论计数，包含加载动画
                       a(href=url_for(link) + '#post-comment')
                         span.valine-comment-count(data-xid=url_for(link))
                           i.fa-solid.fa-spinner.fa-spin
+                  // Waline 评论系统
                   when 'Waline'
                     +countBlockInIndex
+                      // 显示 Waline 评论计数，包含加载动画
                       a(href=url_for(link) + '#post-comment')
                         span.waline-comment-count(data-path=url_for(link))
                           i.fa-solid.fa-spinner.fa-spin
+                  // Twikoo 评论系统
                   when 'Twikoo'
                     +countBlockInIndex
+                      // 显示 Twikoo 评论计数，包含加载动画
                       a.twikoo-count(href=url_for(link) + '#post-comment')
                         i.fa-solid.fa-spinner.fa-spin
+                  // Facebook Comments
                   when 'Facebook Comments'
                     +countBlockInIndex
+                      // 显示 Facebook 评论计数
                       a(href=url_for(link) + '#post-comment')
                         span.fb-comments-count(data-href=urlNoIndex(article.permalink))
+                  // Remark42 评论系统
                   when 'Remark42'
                     +countBlockInIndex
+                      // 显示 Remark42 评论计数，包含加载动画
                       a(href=url_for(link) + '#post-comment')
                         span.remark42__counter(data-url=urlNoIndex(article.permalink))
                           i.fa-solid.fa-spinner.fa-spin
+                  // Artalk 评论系统
                   when 'Artalk'
                     +countBlockInIndex
+                      // 显示 Artalk 评论计数，包含加载动画
                       a(href=url_for(link) + '#post-comment')
                         span.artalk-count(data-page-key=url_for(link))
                           i.fa-solid.fa-spinner.fa-spin
 
-            //- Display the article introduction on homepage
+            // 获取文章简介（postDesc 函数处理）
             - const content = postDesc(article)
+            // 如果有简介内容
             if content
+              // 显示文章简介（使用 != 表示不转义 HTML）
               .content!=content
 
+        // 如果启用了广告且配置了首页广告
         if theme.ad && theme.ad.index
+          // 每 3 篇文章插入一个广告
           if (index + 1) % 3 === 0
+            // 显示广告内容
             .recent-post-item.ads-wrap!= theme.ad.index
 
+    // 引入分页模板（pagination.pug），用于显示分页导航
     include ../pagination.pug

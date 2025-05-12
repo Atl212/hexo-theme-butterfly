@@ -1,37 +1,59 @@
+// 定义分页选项对象，配置分页导航的显示样式
 -
   var options = {
-    prev_text: '<i class="fas fa-chevron-left fa-fw"></i>',
-    next_text: '<i class="fas fa-chevron-right fa-fw"></i>',
-    mid_size: 1,
-    escape: false
+    prev_text: '<i class="fas fa-chevron-left fa-fw"></i>', // 上一页按钮的图标
+    next_text: '<i class="fas fa-chevron-right fa-fw"></i>', // 下一页按钮的图标
+    mid_size: 1, // 分页中间显示的页码数量
+    escape: false // 不转义 HTML，确保图标正确渲染
   }
 
+// 判断当前页面类型是否为文章页面（post）
 if globalPageType === 'post'
+  // 根据主题配置（theme.post_pagination）决定上下篇文章的顺序（2 表示反转）
   - let paginationOrder = theme.post_pagination === 2 ? { prev: page.prev, next: page.next } : { prev: page.next, next: page.prev }
 
+  // 创建文章页面专用的分页导航容器
   nav#pagination.pagination-post
+    // 遍历 paginationOrder 对象（包含 prev 和 next 方向）
     each direction, key in paginationOrder
+      // 如果存在对应的文章（direction 不为空）
       if direction
+        // 获取文章简介（优先使用 direction.postDesc，否则调用 postDesc 函数）
         - const getPostDesc = direction.postDesc || postDesc(direction)
+        // 动态设置类名：如果另一方向无文章，添加 full-width 类；如果无简介，添加 no-desc 类
         - let className = key === 'prev' ? (paginationOrder.next ? '' : 'full-width') : (paginationOrder.prev ? '' : 'full-width')
         - className = getPostDesc ? className : className + ' no-desc'
 
+        // 创建上下篇文章的链接，包含动态类名和标题作为提示
         a.pagination-related(class=className href=url_for(direction.path) title=direction.title)
+          // 如果封面类型为图片（img）
           if direction.cover_type === 'img'
+            // 显示图片封面，包含错误处理（加载失败时显示默认图片）
             img.cover(src=url_for(direction.cover) onerror=`onerror=null;src='${url_for(theme.error_img.post_page)}'` alt=`cover of ${key === 'prev' ? 'previous' : 'next'} post`)
           else
+            // 使用背景样式显示封面（默认使用主题的默认背景颜色）
             .cover(style=`background: ${direction.cover || 'var(--default-bg-color)'}`)
 
+          // 文章信息容器，prev 时左对齐，next 时右对齐
           .info(class=key === 'prev' ? '' : 'text-right')
+            // 第一部分信息（标题和方向标签）
             .info-1
+              // 显示“上一页”或“下一页”标签（通过 _p 获取翻译文本）
               .info-item-1=_p(`pagination.${key}`)
+              // 显示文章标题（不转义 HTML）
               .info-item-2!=direction.title
+            // 如果有简介内容
             if getPostDesc
+              // 显示简介内容（不转义 HTML）
               .info-2
                 .info-item-1!=getPostDesc
 else
+  // 创建常规分页导航容器
   nav#pagination
+    // 分页内容容器
     .pagination
+      // 如果是首页，设置分页链接的格式（指向 #content-inner 锚点）
       if globalPageType === 'home'
         - options.format = 'page/%d/#content-inner'
+      // 调用 paginator 函数生成分页导航，传入配置选项（不转义 HTML）
       !=paginator(options)
