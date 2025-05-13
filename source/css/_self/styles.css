@@ -1,14 +1,14 @@
-@font-face {
+/* @font-face {
     font-family: 'Source Han Sans CN';
     src: url('../../assets/fonts/Source-Han-Sans-CN-VF-Regular.otf');
-}
+} */
 
 :root {
     --hole-color-1: #000000;
 }
 
 body {
-    font-family: 'Source Han Sans CN';
+    /* font-family: 'Source Han Sans CN'; */
     background-color: var(--hole-color-1);
 }
 
@@ -279,6 +279,7 @@ p {
 
     display: flex; /* 启用 Flexbox 布局 */
     justify-content: center; /* 水平居中 */
+    flex-direction: row;
     align-items: center; /* 垂直居中 */
 }
 
@@ -291,11 +292,15 @@ p {
 }
 
 .portfolio-item .caption {
+    position: absolute;
     display: flex;
     width: 100%; /* 与 .portfolio-item 宽度一致 */
     height: 100%; /* 与 .portfolio-item 高度一致 */
-    position: absolute;
+    align-items: center;
+    justify-content: center;
+
     top: 0;
+    left: 0;
     bottom: 0;
     z-index: 3; /* 确保文字在遮蔽层之上 */
     
@@ -312,6 +317,10 @@ p {
 }
 
 .portfolio-item .caption .caption-content {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
     color: #fff;
     margin: 20px 20px;
 }
