@@ -5,6 +5,7 @@ hexo.extend.filter.register('before_generate', () => {
     nav: {
       logo: null,
       display_title: true,
+      display_top: true,
       fixed: false
     },
     menu: null,
@@ -122,7 +123,11 @@ hexo.extend.filter.register('before_generate', () => {
       nav: null,
       owner: {
         enable: true,
-        since: 2024
+        since: 2024,
+        custom_author: {
+          enable: false,
+          custom_author_text: null,
+        },
       },
       copyright: {
         enable: true,

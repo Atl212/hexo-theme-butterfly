@@ -15,25 +15,65 @@ if nav
                   a(href=url_for(subitem.url), target='_blank' title=subitem.title)= subitem.title
                 else if subitem.title
                   div!= subitem.title
+
 .footer-other
+  // 定义一个类名为 "footer-other" 的容器，通常用于页脚的其他内容区域
   .footer-copyright
+
+    // 定义一个类名为 "footer-copyright" 的子容器，用于存放版权相关信息
     if owner.enable
+      // 检查 owner.enable 是否为 true，以决定是否显示作者版权信息
+      // 获取当前年份并存储在 currentYear 变量中
       - const currentYear = new Date().getFullYear()
+      // 获取 owner 对象中的 since 属性，表示版权起始年份
       - const sinceYear = owner.since
+      - const useCustomAuthor = owner.custom_author.enable
+      - const customAuthor = owner.custom_author.custom_author_text
+
       span.copyright
+        // 创建一个类名为 "copyright" 的 span 元素，用于显示版权文本
         if sinceYear && sinceYear != currentYear
-          != `&copy;${sinceYear} - ${currentYear} By ${config.author}`
+          // 检查 sinceYear 是否存在且不等于当前年份，以决定显示年份范围还是单一年份
+          if useCustomAuthor
+            // 检查 useCustomAuthor 是否为 true，以决定使用自定义作者文本
+            // 显示年份范围和自定义作者文本（如 ©2020 - 2025 By 自定义名称）
+            != `©${sinceYear} - ${currentYear} ${customAuthor}`
+          else
+            // 显示年份范围和默认作者名（如 ©2020 - 2025 By 作者名）
+            != `©${sinceYear} - ${currentYear} By ${config.author}`
         else
-          != `&copy;${currentYear} By ${config.author}`
+          // 如果 sinceYear 不存在或等于当前年份，仅显示当前年份
+          if useCustomAuthor
+            // 检查 useCustomAuthor 是否为 true，以决定使用自定义作者文本
+            // 显示当前年份和自定义作者文本（如 ©2025 By 自定义名称）
+            != `©${currentYear} ${customAuthor}`
+          else
+            // 显示当前年份和默认作者名（如 ©2025 By 作者名）
+            != `©${currentYear} By ${config.author}`
+
     if copyright.enable
+      // 检查 copyright.enable 是否为 true，以决定是否显示框架和主题信息
       - const v = copyright.version ? getVersion() : false
+      // 检查 copyright.version 是否为 true，如果是则调用 getVersion() 获取版本信息，否则设为 false
       span.framework-info
+        // 创建一个类名为 "framework-info" 的 span 元素，用于显示框架和主题信息
         if owner.enable && nav
+          // 检查 owner.enable 和 nav 是否都为 true，以决定是否显示分隔符
+          // 显示一个竖线（|）作为分隔符
           span.footer-separator |
+
         span= _p('footer.framework') + ' '
+        // 显示翻译后的 "footer.framework" 文本（如 "Powered by"），后面加一个空格
         a(href='https://hexo.io')= `Hexo${ v ? ' ' + v.hexo : '' }`
+        // 创建指向 Hexo 官网的链接，显示 "Hexo" 文本，如果 v 存在则追加 Hexo 版本号
         span.footer-separator |
+        // 显示一个竖线（|）作为分隔符
         span= _p('footer.theme') + ' '
+        // 显示翻译后的 "footer.theme" 文本（如 "Theme"），后面加一个空格
         a(href='https://github.com/jerryc127/hexo-theme-butterfly')= `Butterfly${ v ? ' ' + v.theme : '' }`
+        // 创建指向 Butterfly 主题 GitHub 的链接，显示 "Butterfly" 文本，如果 v 存在则追加主题版本号
+
   if theme.footer.custom_text
+    // 检查 theme.footer.custom_text 是否存在，以决定是否显示自定义页脚文本
     .footer_custom_text!= theme.footer.custom_text
+    // 创建一个类名为 "footer_custom_text" 的容器，并渲染自定义页脚文本（支持 HTML）
