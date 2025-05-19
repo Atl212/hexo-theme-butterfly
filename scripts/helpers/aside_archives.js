@@ -83,7 +83,6 @@ hexo.extend.helper.register('aside_archives', function (options = {}) {
   // Use template literal for better readability
   const archiveHeader = `
     <div class="item-headline">
-      <i class="fas fa-archive"></i>
       <span>${_p('aside.card_archives')}</span>
       ${
         data.length > limitedData.length

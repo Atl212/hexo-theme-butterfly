@@ -74,7 +74,7 @@ mixin indexPostUI()
                     - const date_icon = data_type_updated ? 'fas fa-history' : 'far fa-calendar-alt'
                     - const date_title = data_type_updated ? _p('post.updated') : _p('post.created')
                     // 显示对应的日期图标
-                    i(class=date_icon)
+                    //- i(class=date_icon)
                     // 显示对应的日期标签
                     span.article-meta-label= date_title
                     // 显示格式化的日期，包含完整日期作为提示
@@ -88,7 +88,7 @@ mixin indexPostUI()
                   // 遍历文章的分类
                   each item, index in article.categories.data
                     // 显示分类图标
-                    i.fas.fa-inbox
+                    //- i.fas.fa-inbox
                     // 显示分类名称，链接到分类页面
                     a(href=url_for(item.path)).article-meta__categories #[=item.name]
                     // 如果不是最后一个分类，显示分隔箭头
@@ -103,7 +103,7 @@ mixin indexPostUI()
                   // 遍历文章的标签
                   each item, index in article.tags.data
                     // 显示标签图标
-                    i.fas.fa-tag
+                    //- i.fas.fa-tag
                     // 显示标签名称，链接到标签页面
                     a(href=url_for(item.path)).article-meta__tags #[=item.name]
                     // 如果不是最后一个标签，显示分隔点

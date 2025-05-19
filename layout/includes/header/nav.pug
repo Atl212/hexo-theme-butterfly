@@ -2,26 +2,35 @@ nav#nav
   span#blog-info
     if theme.nav.display_top
       a.nav-site-title
-        span.site-top='Top'
+        button#go-up( type="button" title=_p("rightside.back_to_top")) Top
+        //- button#go-up(type="button" title=_p("rightside.back_to_top"))
+        //- span.site-top='Top'
     else
-    a.nav-site-title(href=url_for('/'))
-      if theme.nav.logo
-        img.site-icon(src=url_for(theme.nav.logo) alt='Logo')
-      if theme.nav.display_title
-        span.site-name=config.title
+      a.nav-site-title(href=url_for('/'))
+        if theme.nav.logo
+          img.site-icon(src=url_for(theme.nav.logo) alt='Logo')
+        if theme.nav.display_title
+          span.site-name=config.title
     
     if globalPageType === 'post'
       a.nav-page-title(href=url_for('/'))
         span.site-name=(page.title || config.title)
+
+    if theme.menu
+          != partial('includes/header/menu_item', {}, {cache: true})
+
+          #toggle-menu
+            span.site-page
+              i.fas.fa-bars.fa-fw
   #menus
     if theme.search.use
       #search-button
         span.site-page.social-icon.search
-          i.fas.fa-search.fa-fw
+          //- i.fas.fa-search.fa-fw
           span= ' ' + _p('search.title')
-    if theme.menu
-      != partial('includes/header/menu_item', {}, {cache: true})
+    //- if theme.menu
+    //-   != partial('includes/header/menu_item', {}, {cache: true})
 
-      #toggle-menu
-        span.site-page
-          i.fas.fa-bars.fa-fw
+    //-   #toggle-menu
+    //-     span.site-page
+    //-       i.fas.fa-bars.fa-fw
