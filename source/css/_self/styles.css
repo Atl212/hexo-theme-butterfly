@@ -558,6 +558,19 @@ button#go-up:hover {
 
 
 /* 原本index.css的修改覆盖 */
+
+.avatar-img img:hover {
+    -webkit-transform: none;
+    transform: none;
+    filter: brightness(1.3);
+}
+
+#aside-content .card-info .card-info-social-icons i:hover {
+    -webkit-transform: none;
+    transform: none;
+    opacity: 0.7;
+}
+
 a:hover {
     text-decoration: none;
 }
@@ -583,6 +596,13 @@ a:hover {
 .custom-hr, .search-dialog hr  {
     border: 1px solid rgba(255,255,255,0.4);
 }
+
+#page-header #site_social_icons {
+    text-align: left;
+    margin-left: 5%;
+}
+
+
 
 /* bootstrap的部分代码 */
 .text-white {
